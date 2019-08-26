@@ -170,20 +170,46 @@ unsigned int Graph::DFS(Vertex* n, Vertex* s, bool edgesRev) {
 
 void Graph::Kosaraju() {
 
+	// used to keep track of current leader vertex
 	Vertex* currentLeader;
+
+	// used to iterate through vertices
 	Vertex* currentVertex;
+
+	/* used to keep track of how many times
+	 * DFS is called with a current leader vertex
+	 */
+	unsigned int count = 1;
+
+	/* used to keep track if we are running DFS
+	 * with edges reversed or not.
+	 */
 	bool edgesRev = true;
+
+	// number of vertices
 	unsigned int n = vertex_map.size();
+
+	// used for iterating
 	unsigned int i;
-	for( i = n; i > 0; --i) {
-		currentVertex = vertex_map[i];
-		if ( !(currentVertex->explored) ){
-			currentLeader = currentVertex;
-			DFS(currentVertex, currentLeader, edgesRev);
+
+	// used for iterating
+	unsigned int j;
+
+	for(j = 0; j < 2; ++j){
+		if( j % 2 ){
+			edgesRev = false;
+		}		
+		for( i = n; i > 0; --i) {
+			currentVertex = vertex_map[i];
+			if ( !(currentVertex->explored) ){
+				currentLeader = currentVertex;
+				count = DFS(currentVertex, currentLeader, edgesRev);
+			}
+			if( j % 2 ){
+				leaders.push(make_pair(count, currentLeader));
+			}	
 		}
-	}
-
-
+	}	
 }    
 
 
