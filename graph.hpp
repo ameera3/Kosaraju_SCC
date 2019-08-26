@@ -68,13 +68,18 @@ public:
      *
      */
 
-    void DFS( Vertex* n, Vertex* s);
+     /*
+      * Resets the explored parameter of all the vertices
+      */
+    void reset();
+
+    unsigned int DFS( Vertex* n, Vertex* s, bool edgesRev);
 
     /*
      * Kosaraju's Algorithm
      * 
      */ 
-    void Kosaraju();
+    vector<pair<unsigned int, Vertex*>> Kosaraju();
 };
 
 

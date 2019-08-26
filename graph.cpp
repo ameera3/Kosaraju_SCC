@@ -9,12 +9,16 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <queue>
 #include <vector>
 #include <algorithm>
 #include <stdlib.h> 
 #include <time.h> 
 #include "graph.hpp"
 #include <limits>
+
+// number of SCCs to report
+#define NUM_SCC 5
 
 using namespace std;
 
@@ -80,32 +84,32 @@ bool Graph::loadFromFile(const char* filename) {
 				vertex_map[currentTail] = currTail;
 			}
 
-				// extracting current head
-				ss >> temp;
+			// extracting current head
+			ss >> temp;
 
-				// check current head is unsigned int
-				if ( stringstream(temp) >> currentHead ){
+			// check current head is unsigned int
+			if ( stringstream(temp) >> currentHead ){
 
-					/* search for vertex in current list
-					 * of vertices. If it's not there, 
-					 * create a new vertex and add it to
-					 * the current list of vertices.
-					 */
-					Vertex* currHead = vertex_map[currentHead];
-					if(currHead == nullptr){
-						currHead = new Vertex(currentHead);
-						vertex_map[currentHead] = currHead;
-					}
-
-					/* add edge to currTail's outEdges and
-					 * to currHead's inEdges
-					 */
-					(currTail->outEdges).push_back(currHead);
-					(currHead->inEdges).push_back(currTail);
+				/* search for vertex in current list
+				 * of vertices. If it's not there, 
+				 * create a new vertex and add it to
+				 * the current list of vertices.
+				 */
+				Vertex* currHead = vertex_map[currentHead];
+				if(currHead == nullptr){
+					currHead = new Vertex(currentHead);
+					vertex_map[currentHead] = currHead;
 				}
 
-				/* To save from space at the end of string */
-				temp = ""; 
+				/* add edge to currTail's outEdges and
+				 * to currHead's inEdges
+				 */
+				(currTail->outEdges).push_back(currHead);
+				(currHead->inEdges).push_back(currTail);
+			}
+
+			/* To save from space at the end of string */
+			temp = ""; 
 		}
 		ss.str("");
 	}
@@ -140,35 +144,45 @@ unsigned int Graph::DFS(Vertex* n, Vertex* s, bool edgesRev) {
 
 	n->explored = true;
 	n->leader = s;
-	
+
 	if( edgesRev ){
-		it = (n->outEdges).begin();
-		end = (n->outEdges).end();
-	}
-	else{
 		it = (n->inEdges).begin();
 		end = (n->inEdges).end();
+	}
+	else{
+		it = (n->outEdges).begin();
+		end = (n->outEdges).end();
 	}	
 	for ( ; it != end; ++it ) {
 		if( !((*it)->explored) ) {
-				++count;
-				DFS(*it, s, edgesRev);
+			count += DFS(*it, s, edgesRev);
 		}
 	}
 	++time;
-	n->fTime = time;
-	vertex_map[fTime] = n;
-
+	if( edgesRev ) {
+		n->fTime = time;
+		vertex_map[time] = n;
+	}	
 	return count;
 } 
 
+/* 
+ * Resets the explored all the vertices
+ * as we need to run DFS twice.
+ */
+void Graph::reset() {
+
+	for( auto it = vertex_map.begin(); it != vertex_map.end(); ++it ){
+		(it->second)->explored = false;
+	}
+}
 
 /*
  * Kosaraju's SCC Algorithm
  *            
  */
 
-void Graph::Kosaraju() {
+vector<pair<unsigned int, Vertex*>> Graph::Kosaraju() {
 
 	// used to keep track of current leader vertex
 	Vertex* currentLeader;
@@ -176,10 +190,13 @@ void Graph::Kosaraju() {
 	// used to iterate through vertices
 	Vertex* currentVertex;
 
+	// vector of sizes returned
+	vector<pair<unsigned int, Vertex*>> sizes;
+
 	/* used to keep track of how many times
 	 * DFS is called with a current leader vertex
 	 */
-	unsigned int count = 1;
+	unsigned int count;
 
 	/* used to keep track if we are running DFS
 	 * with edges reversed or not.
@@ -197,19 +214,35 @@ void Graph::Kosaraju() {
 
 	for(j = 0; j < 2; ++j){
 		if( j % 2 ){
+			time = 0;
 			edgesRev = false;
+			reset();
 		}		
 		for( i = n; i > 0; --i) {
 			currentVertex = vertex_map[i];
 			if ( !(currentVertex->explored) ){
 				currentLeader = currentVertex;
 				count = DFS(currentVertex, currentLeader, edgesRev);
-			}
-			if( j % 2 ){
-				leaders.push(make_pair(count, currentLeader));
+				if( j % 2 ){
+					leaders.push(make_pair(count, currentLeader));
+				}	
 			}	
 		}
-	}	
+	}
+
+	// save the current size of the priority queue leaders. Otherwise, 
+	// every time you pop this will decrease the size.
+	unsigned int qSize = leaders.size();
+
+	/* Fill the vector to return */
+	for(j = 0; j < qSize && j < NUM_SCC; j++) {
+		pair<unsigned int, Vertex*> temp = leaders.top();
+		sizes.push_back(temp);
+		leaders.pop();
+	}
+
+	return sizes;
+
 }    
 
 

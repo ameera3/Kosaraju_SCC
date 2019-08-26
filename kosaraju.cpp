@@ -1,13 +1,16 @@
 /*
- * Filename: karger.cpp
- * Usage: ./karger File
- * Description: The command line program karger.cpp
-	        takes in one parameter, an input file
-		name. The input file specified by the
-		input file name should contain the
-		adjacency list representation of a 
-		simple undirected graph. The program
-		will output the minimum cut in the graph.
+ * Filename: kosaraju.cpp
+ * Usage: ./kosaraju File
+ * Description: The command line program kosaraju.cpp
+ *	        takes in one parameter, an input file
+ *		name. The input file specified by the
+ *		input file name should contain a list 
+ *		of its edges. Every row indicates an 
+ *		edge, the vertex label in first column 
+ *		is the tail and the vertex label in 
+ *		second column is the head. The program 
+ *		will output the size of the five largest
+ *		strongly connected components.
  */
 
 #include <iostream>
@@ -15,6 +18,7 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
+#include <queue>
 #include <vector>
 #include <stdlib.h> 
 #include <time.h>
@@ -40,23 +44,22 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
+	// vector returned by Kosaraju
+	vector<pair<unsigned int, Vertex*>> results;
+
 	// create a new instance of graph
 	Graph* G = new Graph();
 
 	// load graph from text file
 	G->loadFromFile(argv[IN_IDX]);
-	unsigned int V = (G->vertex_map).size();
-	unsigned int minCut = std::numeric_limits<unsigned int>::max();
-	unsigned int repeat = (unsigned int) ceil(pow(V,2)*log(V));	
+		
+	// run Kosaraju and print the results
+	results = G->Kosaraju();
+	for(unsigned int i = 0; i < results.size(); ++i) {
+		cout << results[i].first << *results[i].second << endl;
+	}		
 
-	for(unsigned int i = 0; i < repeat; ++i) { 
-	  unsigned int thisCut = G->Karger();
-		if( thisCut < minCut ){
-			minCut = thisCut;
-		}	
-		G->reset();
-	}
-	cout << "Min Cut: " << minCut << endl;
+	// no memory leaks here
 	delete G;
 }
 	

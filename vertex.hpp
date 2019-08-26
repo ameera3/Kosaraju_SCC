@@ -61,6 +61,7 @@ inline ostream & operator <<(ostream& stm, const Vertex& v) {
     stm << "; l:" << setw(10) << v.leader;   // Vertex leader
     stm << "; t:" << v.fTime;                // Vertex finishing time
     stm << "; o:" << (v.outEdges).size();    // Number of outgoing arcs
+    stm << "; i:" << (v.inEdges).size();     // Number of incoming arcs
     stm << ']';
     return stm;
 }
