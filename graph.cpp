@@ -142,9 +142,15 @@ unsigned int Graph::DFS(Vertex* n, Vertex* s, bool edgesRev) {
 	 */
 	unsigned int count = 1;
 
+	/* set explored parameter of n to true and
+	 * set leader of n to be s
+	 */
 	n->explored = true;
 	n->leader = s;
 
+	/* if edges reversed, iterate over all incoming edges
+	 * of n. Otherwise, iterate over all outgoing edges.
+	 */
 	if( edgesRev ){
 		it = (n->inEdges).begin();
 		end = (n->inEdges).end();
@@ -152,17 +158,28 @@ unsigned int Graph::DFS(Vertex* n, Vertex* s, bool edgesRev) {
 	else{
 		it = (n->outEdges).begin();
 		end = (n->outEdges).end();
-	}	
+	}
+
+	/* if an in/out neighbor of n is not yet explored
+	 * call DFS from it and add its count to the running
+	 * total.
+	 */
 	for ( ; it != end; ++it ) {
 		if( !((*it)->explored) ) {
 			count += DFS(*it, s, edgesRev);
 		}
 	}
+
+	/* Increment time, set the finishing time of n
+	 * and update the fTime map if this is the first pass
+	 */
 	++time;
 	if( edgesRev ) {
 		n->fTime = time;
 		fTime_map[time] = n;
-	}	
+	}
+
+	// return total number of times DFS with leader s is called
 	return count;
 } 
 
@@ -215,13 +232,28 @@ vector<pair<unsigned int, Vertex*>> Graph::Kosaraju() {
 	// used for iterating
 	unsigned int j;
 
+	// Run DFS twice
 	for(j = 0; j < 2; ++j){
+
+		/* On the second pass, reset the time, the 
+		 * explored parameter of all vertices, process
+		 * the edges with their original direction,
+		 * and use finishing time to order the vertices
+		 */
 		if( j % 2 ){
 			time = 0;
 			edgesRev = false;
 			reset();
 			mapping = fTime_map;
-		}		
+		}
+
+		/* Always start with the largest label (name or finishing
+		 * time) and process down to the smallest. If the current
+		 * vertex is not explored, set the current leader to be the
+		 * current vertex and run DFS. On the second pass store, 
+		 * the count and the current leader in a priority queue
+		 * so that we can find the five largest components
+		 */
 		for( i = n; i > 0; --i) {
 			currentVertex = mapping[i];
 			if ( !(currentVertex->explored) ){

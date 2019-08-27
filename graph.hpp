@@ -25,7 +25,8 @@ using namespace std;
  *                              size of the corresponding SCC)
  * Description: Implements a directed graph class for Kosaraju's
  *		SCC algorithm.
- * Public Methods: constructor, destructor, loadfromFile, Kosaraju, DFS
+ * Public Methods: constructor, destructor, loadfromFile, Kosaraju, DFS,
+ *		   reset.
  * Private Methods: None                    
 */
 
@@ -54,7 +55,10 @@ public:
     Graph(void);
 
     /*
-     * Load the graph from its adjacency list representation.
+     * Load the digraph from a list of its edges.
+     * Every row indicates an edge, the vertex label in first 
+     * column is the tail and the vertex label in second column 
+     * is the head.
      *
      * in_filename - input filename
      *
