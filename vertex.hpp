@@ -49,7 +49,7 @@ class Vertex {
 
         // Constructor that constructs a node with the given label.
         Vertex(unsigned int& label) :
-            name(label), leader(nullptr), fTime(label), explored(false) {} 
+            name(label), leader(nullptr), fTime(0), explored(false) {} 
 
 };
 

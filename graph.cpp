@@ -161,13 +161,13 @@ unsigned int Graph::DFS(Vertex* n, Vertex* s, bool edgesRev) {
 	++time;
 	if( edgesRev ) {
 		n->fTime = time;
-		vertex_map[time] = n;
+		fTime_map[time] = n;
 	}	
 	return count;
 } 
 
 /* 
- * Resets the explored all the vertices
+ * Resets the explored parameter of all the vertices
  * as we need to run DFS twice.
  */
 void Graph::reset() {
@@ -193,6 +193,9 @@ vector<pair<unsigned int, Vertex*>> Graph::Kosaraju() {
 	// vector of sizes returned
 	vector<pair<unsigned int, Vertex*>> sizes;
 
+	// used to switch between vertex_map and fTime_map
+	unordered_map<unsigned int, Vertex*> mapping = vertex_map;
+
 	/* used to keep track of how many times
 	 * DFS is called with a current leader vertex
 	 */
@@ -217,9 +220,10 @@ vector<pair<unsigned int, Vertex*>> Graph::Kosaraju() {
 			time = 0;
 			edgesRev = false;
 			reset();
+			mapping = fTime_map;
 		}		
 		for( i = n; i > 0; --i) {
-			currentVertex = vertex_map[i];
+			currentVertex = mapping[i];
 			if ( !(currentVertex->explored) ){
 				currentLeader = currentVertex;
 				count = DFS(currentVertex, currentLeader, edgesRev);

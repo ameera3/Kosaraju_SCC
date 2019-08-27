@@ -17,9 +17,10 @@ using namespace std;
 
 /* 
  * Class name: Graph
- * Instance Variables: vertex_map (unordered map of vertex finishing 
- *				   times and corresponding vertex 
- *				   pointers)
+ * Instance Variables: vertex_map (unordered map of vertex labels 
+ *				   and corresponding vertex pointers)
+ *		       fTime_map (unordered map of vertex finishing times
+ * 				  and corresponding vertex pointers)
  *		       leaders (priority queue of leaders along with the
  *                              size of the corresponding SCC)
  * Description: Implements a directed graph class for Kosaraju's
@@ -34,10 +35,15 @@ public:
 
      unsigned int time;		
 
-    /* Unordered map of vertex finishing times and 
+    /* Unordered map of vertex labels and 
      *	corresponding vertex pointers
      */
     unordered_map<unsigned int,Vertex*> vertex_map;
+
+    /* Unordered map of vertex finishing times and
+     * corresponding vertex pointers
+     */
+    unordered_map<unsigned int, Vertex*> fTime_map;
 
     // Priority Queue of Leaders
     priority_queue< pair<unsigned int, Vertex*> > leaders;
