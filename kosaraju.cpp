@@ -53,7 +53,8 @@ int main(int argc, char** argv)
 	// load graph from text file
 	G->loadFromFile(argv[IN_IDX]);
 		
-	// run Kosaraju and print the results
+	// run Kosaraju and print the sizes and leaders of the 
+	// top five components.
 	results = G->Kosaraju();
 	for(unsigned int i = 0; i < results.size(); ++i) {
 		cout << results[i].first << *results[i].second << endl;

@@ -3,7 +3,7 @@ CXX ?= g++
 CXXFLAGS=-std=c++11 -Wall 
 LDFLAGS=-g
 
-all: kosaraju 
+all: kosaraju   
 
 kosaraju: graph.o
 
