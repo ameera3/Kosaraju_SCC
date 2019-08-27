@@ -12,7 +12,7 @@ column is the tail and the vertex label in second column is the head.
  of its edges. Every row indicates an edge, the vertex label in first column 
  is the tail and the vertex label in second column is the head. The program 
  will run [Kosaraju's Algorithm](https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm)
- and output the size of the five largest strongly connected components.
+ and output the sizes of the five largest strongly connected components.
 
 
 
